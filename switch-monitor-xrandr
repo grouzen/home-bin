@@ -1,0 +1,12 @@
+#!/usr/bin/perl -w
+
+use strict;
+use warnings;
+
+my @xrandr_out  = qx(xrandr);
+my $current_res = (split /\s+/, (grep { /\*/ } @xrandr_out)[0])[1];
+my $current_mon = (split /\s+/, (grep { /connected $current_res/ } @xrandr_out)[0])[0];
+my $next_mon    = (split /\s+/, (grep { ! /^$current_mon/ } (grep { / connected/ } @xrandr_out))[0])[0];
+
+qx(xrandr --output $next_mon --auto);
+qx(xrandr --output $current_mon --off);
